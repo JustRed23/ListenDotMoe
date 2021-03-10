@@ -12,6 +12,9 @@ public class ListenDotMoe implements Runnable {
     private static String message = "";
     private static final Gson gson = new Gson();
 
+    private static final String LDM_ALBUM_ENDPOINT = "https://cdn.listen.moe/covers/";
+    private static final String LDM_ARTISTS_ENDPOINT = "https://cdn.listen.moe/artists/";
+
     private Thread thread;
 
     public void start() {
@@ -23,8 +26,6 @@ public class ListenDotMoe implements Runnable {
 
         thread = new Thread(listenDotMoe);
         thread.start();
-
-        Runtime.getRuntime().addShutdownHook(new Thread(this::stop));
     }
 
     public void stop() {

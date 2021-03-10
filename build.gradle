@@ -13,6 +13,7 @@ dependencies {
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
     compile 'org.jetbrains:annotations:20.1.0'
     compile 'com.google.code.gson:gson:2.8.6'
+    compile 'org.glassfish.tyrus:tyrus-server:2.0.0'
 }
 
 test {

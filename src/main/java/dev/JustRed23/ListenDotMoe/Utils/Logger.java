@@ -1,14 +1,19 @@
-package Utils;
+package dev.JustRed23.ListenDotMoe.Utils;
 
-import static Utils.LogLevel.*;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+
+import static org.apache.logging.log4j.Level.*;
 
 public class Logger {
 
     public static boolean disableLogging = false;
     public static boolean debug = false;
 
-    public static void log(LogLevel level, String message) {
-        if (!disableLogging) System.out.printf("[%s] [%s] %s%n", "ListenDotMoe", level.name(), message);
+    private static final org.apache.logging.log4j.Logger LOGGER = LogManager.getLogger("dev.JustRed23.ListenDotMoe.ListenDotMoe");
+
+    public static void log(Level level, String message) {
+        LOGGER.log(level, message);
     }
 
     public static void info(String message) {

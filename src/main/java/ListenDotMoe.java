@@ -15,8 +15,6 @@ public class ListenDotMoe implements Runnable {
     private static final String LDM_ALBUM_ENDPOINT = "https://cdn.listen.moe/covers/";
     private static final String LDM_ARTISTS_ENDPOINT = "https://cdn.listen.moe/artists/";
 
-    private Thread thread;
-
     public void start() {
         endpoint = new LDMEndpoint("wss://listen.moe/gateway_v2");
 
@@ -24,7 +22,7 @@ public class ListenDotMoe implements Runnable {
         ListenDotMoe listenDotMoe = new ListenDotMoe();
         endpoint.addMessageHandler(message -> ListenDotMoe.message = message);
 
-        thread = new Thread(listenDotMoe);
+        Thread thread = new Thread(listenDotMoe);
         thread.start();
     }
 

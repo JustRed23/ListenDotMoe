@@ -1,4 +1,4 @@
-package Endpoint;
+package dev.JustRed23.ListenDotMoe.Endpoint;
 
 import com.google.gson.JsonObject;
 import jakarta.websocket.*;
@@ -7,7 +7,9 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.Timer;
 import java.util.TimerTask;
-import static Utils.Logger.*;
+import java.util.concurrent.TimeUnit;
+
+import static dev.JustRed23.ListenDotMoe.Utils.Logger.*;
 
 @ClientEndpoint
 public class LDMEndpoint {
@@ -56,16 +58,23 @@ public class LDMEndpoint {
     }
 
     @OnError
-    public void onError(Session session, Throwable thr) {
+    public void onError(Throwable thr) {
+        reconnectAttempts++;
         error("An error occurred: " + thr.getMessage());
 
         if (reconnectAttempts > 3) {
             error("Could not reconnect to WebSocket! Shutting down");
             close(session, new CloseReason(CloseReason.CloseCodes.TRY_AGAIN_LATER, "Failed to connect, try again later"));
             reconnectAttempts = 0;
+            return;
         }
 
-        info("Attempting to reconnect... attempt " + ++reconnectAttempts);
+        info("Attempting to reconnect... attempt " + reconnectAttempts);
+        try {
+            TimeUnit.SECONDS.sleep(3);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         connect();
     }
 
@@ -105,7 +114,7 @@ public class LDMEndpoint {
             WebSocketContainer container = ContainerProvider.getWebSocketContainer();
             container.connectToServer(this, URI.create(LDM_WEBSOCKET_ADDRESS));
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            onError(e);
         }
     }
 

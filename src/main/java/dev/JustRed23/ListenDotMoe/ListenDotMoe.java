@@ -1,10 +1,12 @@
-import Endpoint.LDMEndpoint;
+package dev.JustRed23.ListenDotMoe;
+
+import dev.JustRed23.ListenDotMoe.Endpoint.LDMEndpoint;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import jakarta.websocket.CloseReason;
 
-import static Utils.Logger.*;
+import static dev.JustRed23.ListenDotMoe.Utils.Logger.*;
 
 public class ListenDotMoe implements Runnable {
 
@@ -18,9 +20,7 @@ public class ListenDotMoe implements Runnable {
     public void start() {
         endpoint = new LDMEndpoint("wss://listen.moe/gateway_v2");
 
-        info("Starting ListenDotMoe");
         ListenDotMoe listenDotMoe = new ListenDotMoe();
-        endpoint.addMessageHandler(message -> ListenDotMoe.message = message);
 
         Thread thread = new Thread(listenDotMoe);
         thread.start();
@@ -32,7 +32,10 @@ public class ListenDotMoe implements Runnable {
     }
 
     public void run() {
-        while (endpoint.getSession().isOpen()) {
+        info("Starting dev.JustRed23.ListenDotMoe.ListenDotMoe");
+        endpoint.addMessageHandler(message -> ListenDotMoe.message = message);
+
+        while (endpoint.getSession() != null && endpoint.getSession().isOpen()) {
             if (!message.equals("")) {
                 JsonObject json = (JsonObject) JsonParser.parseString(message);
 

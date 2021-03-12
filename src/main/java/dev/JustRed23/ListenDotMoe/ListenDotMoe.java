@@ -5,6 +5,10 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import jakarta.websocket.CloseReason;
+import org.fusesource.jansi.AnsiConsole;
+
+import java.util.Arrays;
+import java.util.concurrent.TimeUnit;
 
 import static dev.JustRed23.ListenDotMoe.Utils.Logger.*;
 
@@ -17,22 +21,27 @@ public class ListenDotMoe implements Runnable {
     private static final String LDM_ALBUM_ENDPOINT = "https://cdn.listen.moe/covers/";
     private static final String LDM_ARTISTS_ENDPOINT = "https://cdn.listen.moe/artists/";
 
-    public void start() {
+    public void start(String[] args) {
+        AnsiConsole.systemInstall();
+
+        init(Arrays.asList(args).contains("debug"));
+
         endpoint = new LDMEndpoint("wss://listen.moe/gateway_v2");
 
         ListenDotMoe listenDotMoe = new ListenDotMoe();
 
-        Thread thread = new Thread(listenDotMoe);
+        Thread thread = new Thread(listenDotMoe, "ListenDotMoe");
         thread.start();
     }
 
     public void stop() {
         info("Closing client");
         endpoint.close(endpoint.getSession(), new CloseReason(CloseReason.CloseCodes.NO_STATUS_CODE, "Closing client"));
+        AnsiConsole.systemUninstall();
     }
 
     public void run() {
-        info("Starting dev.JustRed23.ListenDotMoe.ListenDotMoe");
+        info("Starting ListenDotMoe");
         endpoint.addMessageHandler(message -> ListenDotMoe.message = message);
 
         while (endpoint.getSession() != null && endpoint.getSession().isOpen()) {

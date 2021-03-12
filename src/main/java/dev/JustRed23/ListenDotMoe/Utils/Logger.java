@@ -7,28 +7,56 @@ import static org.apache.logging.log4j.Level.*;
 
 public class Logger {
 
-    public static boolean disableLogging = false;
-    public static boolean debug = false;
+    private static boolean debug;
+    public static boolean disableLogging;
 
-    private static final org.apache.logging.log4j.Logger LOGGER = LogManager.getLogger("dev.JustRed23.ListenDotMoe.ListenDotMoe");
+    private static final org.apache.logging.log4j.Logger LOGGER = LogManager.getLogger(Logger.class.getName());
 
-    public static void log(Level level, String message) {
-        LOGGER.log(level, message);
+    public static void init(boolean debug) {
+        Logger.debug = debug;
     }
 
-    public static void info(String message) {
+    public static void log(Level logLevel, Object message) {
+        if (disableLogging) return;
+        LOGGER.log(logLevel, message);
+    }
+
+    private static void log(Level logLevel, Object message, Throwable t) {
+        log(logLevel, message);
+        logStackTrace(t);
+    }
+
+    public static void logStackTrace(Throwable t) {
+        if (t == null)
+            return;
+        t.printStackTrace();
+    }
+
+    public static void info(Object message) {
         log(INFO, message);
     }
 
-    public static void warn(String message) {
+    public static void warn(Object message) {
         log(WARN, message);
     }
 
-    public static void error(String message) {
-        log(ERROR, message);
+    public static void error(Object message) {
+        error(message, null);
     }
 
-    public static void debug(String message) {
+    public static void error(Object message, Throwable t) {
+        log(ERROR, message, t);
+    }
+
+    public static void fatal(Object message) {
+        fatal(message, null);
+    }
+
+    public static void fatal(Object message, Throwable t) {
+        log(FATAL, message, t);
+    }
+
+    public static void debug(Object message) {
         if (debug) log(DEBUG, message);
     }
 }

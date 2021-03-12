@@ -83,7 +83,7 @@ public class LDMEndpoint {
     }
 
     public void setHeartbeatInterval(long interval) {
-        heartbeatInterval = new Timer();
+        heartbeatInterval = new Timer("API-KeepAlive");
         heartbeatInterval.schedule(new TimerTask() {
             public void run() {
                 JsonObject jsonObject = new JsonObject();

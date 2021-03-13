@@ -62,6 +62,8 @@ public class LDMEndpoint {
         reconnectAttempts++;
         error("An error occurred: " + thr.getMessage());
 
+        stopHeartbeatInterval();
+
         if (reconnectAttempts > 3) {
             error("Could not reconnect to WebSocket! Shutting down");
             close(session, new CloseReason(CloseReason.CloseCodes.TRY_AGAIN_LATER, "Failed to connect, try again later"));

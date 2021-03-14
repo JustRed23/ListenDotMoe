@@ -2,11 +2,23 @@ package dev.JustRed23.ListenDotMoe.Endpoint;
 
 import com.google.gson.JsonObject;
 import jakarta.websocket.*;
+import org.glassfish.tyrus.core.HandshakeException;
+import org.glassfish.tyrus.spi.WebSocketEngine;
+import org.jetbrains.annotations.Nullable;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.Reader;
+import java.io.StringReader;
 import java.net.URI;
+import java.nio.ByteBuffer;
+import java.nio.channels.UnresolvedAddressException;
+import java.nio.charset.StandardCharsets;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import static dev.JustRed23.ListenDotMoe.Utils.Logger.*;
@@ -18,66 +30,91 @@ public class LDMEndpoint {
 
     private Session session;
     private MessageHandler messageHandler;
+    public CountDownLatch closeLatch;
+
+    private CloseReason close;
+
+    private boolean onError;
 
     private Timer heartbeatInterval;
 
-    private int reconnectAttempts = 0;
+    private static int reconnectAttempts = 0;
+    private static final int MAX_RECONNECT_ATTEMPTS = 3;
 
     public LDMEndpoint(String address) {
         this.LDM_WEBSOCKET_ADDRESS = address;
+        closeLatch = new CountDownLatch(1);
         connect();
     }
 
     @OnOpen
     public void open(Session session) {
         this.session = session;
-        info("Session " + session.getId() + " started");
         reconnectAttempts = 0;
+        onError = false;
+        info("Session " + session.getId() + " started");
     }
 
     @OnMessage
     public void processMessage(String message) {
-        if (messageHandler != null)
-            messageHandler.handleMessage(message);
+        assert messageHandler != null;
+        messageHandler.handleMessage(message);
     }
 
     @OnClose
-    public void close(Session session, CloseReason closeReason) {
-        if (!closeReason.getReasonPhrase().isEmpty())
-            debug("Connection closed with message: " + closeReason.getReasonPhrase());
+    public void close(CloseReason closeReason) {
+        this.close = closeReason;
+
+        Session session = getSession();
 
         stopHeartbeatInterval();
 
-        if (session != null) {
-            try {
-                session.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+        try {
+            if (session != null && session.isOpen())
+                session.close(closeReason);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+
+        if (onError) {
+            error("An error occurred: " + closeReason.getReasonPhrase());
+            reconnectAttempts++;
+            if (reconnectAttempts > MAX_RECONNECT_ATTEMPTS) {
+                error("Maximum reconnect attempts reached");
+                reconnectAttempts = 0;
+                closeLatch.countDown();
+            } else {
+                info("Attempting to reconnect... Attempt " + reconnectAttempts);
+                try {
+                    TimeUnit.SECONDS.sleep(3);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                connect();
+            }
+        } else
+            closeLatch.countDown();
     }
 
     @OnError
-    public void onError(Throwable thr) {
-        reconnectAttempts++;
-        error("An error occurred: " + thr.getMessage());
+    public void onError(Throwable t) {
+        onError = true;
 
-        stopHeartbeatInterval();
+        String closePhrase;
 
-        if (reconnectAttempts > 3) {
-            error("Could not reconnect to WebSocket! Shutting down");
-            close(session, new CloseReason(CloseReason.CloseCodes.TRY_AGAIN_LATER, "Failed to connect, try again later"));
-            reconnectAttempts = 0;
-            return;
-        }
-
-        info("Attempting to reconnect... attempt " + reconnectAttempts);
         try {
-            TimeUnit.SECONDS.sleep(3);
-        } catch (InterruptedException e) {
+            throw (t instanceof DeploymentException ? t.getCause() : t);
+        } catch (UnresolvedAddressException unresolvedAddressException) {
+            closePhrase = "Could not find websocket address. Make sure you are connected to the internet";
+        } catch (HandshakeException handshakeException) {
+            closePhrase = handshakeException.getMessage();
+        } catch (Throwable e) {
+            closePhrase = e.getMessage();
             e.printStackTrace();
         }
-        connect();
+
+        CloseReason reason = new CloseReason(CloseReason.CloseCodes.NO_STATUS_CODE, closePhrase);
+        close(reason);
     }
 
     public void addMessageHandler(MessageHandler messageHandler) {
@@ -104,8 +141,10 @@ public class LDMEndpoint {
 
     public void sendMessage(String message) {
         debug("Sent message: " + message + " to websocket");
+        Session session = getSession();
         try {
-            this.session.getBasicRemote().sendText(message);
+            if (session != null && session.isOpen())
+                session.getBasicRemote().sendText(message);
         } catch (IOException e) {
             e.printStackTrace();
         }

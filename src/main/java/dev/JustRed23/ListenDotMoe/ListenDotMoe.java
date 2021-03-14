@@ -19,8 +19,8 @@ public class ListenDotMoe implements Runnable {
     private static String message = "";
     private static final Gson gson = new Gson();
 
-    private static final String LDM_ALBUM_ENDPOINT = "https://cdn.listen.moe/covers/";
-    private static final String LDM_ARTISTS_ENDPOINT = "https://cdn.listen.moe/artists/";
+    public static final String LDM_ALBUM_ENDPOINT = "https://cdn.listen.moe/covers/";
+    public static final String LDM_ARTISTS_ENDPOINT = "https://cdn.listen.moe/artists/";
 
     private int heartbeats = 0;
 
@@ -65,6 +65,9 @@ public class ListenDotMoe implements Runnable {
                 break;
             case 1:
                 info("Received song information");
+                info(json);
+                Song song = new Song(json);
+                SongUpdateEvent.onSongUpdate(song);
                 break;
             case 10:
                 debug("Received heartbeat");

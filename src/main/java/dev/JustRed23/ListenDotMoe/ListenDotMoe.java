@@ -65,7 +65,6 @@ public class ListenDotMoe implements Runnable {
                 break;
             case 1:
                 info("Received song information");
-                info(json);
                 Song song = new Song(json);
                 SongUpdateEvent.onSongUpdate(song);
                 break;

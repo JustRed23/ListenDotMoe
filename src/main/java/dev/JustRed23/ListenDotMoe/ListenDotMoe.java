@@ -14,6 +14,8 @@ import static dev.JustRed23.ListenDotMoe.Utils.Logger.*;
 
 public class ListenDotMoe implements Runnable {
 
+    public static final double VERSION = 1.0;
+
     private static LDMEndpoint endpoint;
 
     public static final String LDM_ALBUM_ENDPOINT = "https://cdn.listen.moe/covers/";
@@ -21,8 +23,6 @@ public class ListenDotMoe implements Runnable {
 
     public void start(String[] args) {
         AnsiConsole.systemInstall();
-
-        init(Arrays.asList(args).contains("debug"));
 
         ListenDotMoe listenDotMoe = new ListenDotMoe();
 
@@ -37,7 +37,7 @@ public class ListenDotMoe implements Runnable {
     }
 
     public void run() {
-        info("Starting ListenDotMoe");
+        info("Starting ListenDotMoe V" + VERSION);
         endpoint = new LDMEndpoint("wss://listen.moe/gateway_v2");
         endpoint.addMessageHandler(this::processMessage);
 
@@ -74,5 +74,9 @@ public class ListenDotMoe implements Runnable {
 
     public void disableLogger(boolean disable) {
         disableLogging = disable;
+    }
+
+    public void enableDebug(boolean enable) {
+        debug = enable;
     }
 }

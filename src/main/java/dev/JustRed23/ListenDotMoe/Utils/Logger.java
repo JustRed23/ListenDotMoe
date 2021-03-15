@@ -7,14 +7,10 @@ import static org.apache.logging.log4j.Level.*;
 
 public class Logger {
 
-    private static boolean debug;
+    public static boolean debug;
     public static boolean disableLogging;
 
     private static final org.apache.logging.log4j.Logger LOGGER = LogManager.getLogger(Logger.class.getName());
-
-    public static void init(boolean debug) {
-        Logger.debug = debug;
-    }
 
     public static void log(Level logLevel, Object message) {
         if (disableLogging) return;

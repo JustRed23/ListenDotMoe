@@ -17,11 +17,12 @@ public class ListenDotMoe implements Runnable {
     public static final double VERSION = 1.0;
 
     private static LDMEndpoint endpoint;
+    private SongUpdateEvent songUpdateEvent;
 
     public static final String LDM_ALBUM_ENDPOINT = "https://cdn.listen.moe/covers/";
     public static final String LDM_ARTISTS_ENDPOINT = "https://cdn.listen.moe/artists/";
 
-    public void start(String[] args) {
+    public void start() {
         AnsiConsole.systemInstall();
 
         ListenDotMoe listenDotMoe = new ListenDotMoe();
@@ -61,7 +62,8 @@ public class ListenDotMoe implements Runnable {
             case 1:
                 info("Received song information");
                 Song song = new Song(json);
-                SongUpdateEvent.onSongUpdate(song);
+                if (songUpdateEvent != null)
+                    songUpdateEvent.onSongUpdate(song);
                 break;
             case 10:
                 debug("Received heartbeat");
@@ -70,6 +72,10 @@ public class ListenDotMoe implements Runnable {
                 debug("Received invalid OP code! Ignoring");
                 break;
         }
+    }
+
+    public void addSongEventHandler(SongUpdateEvent handler) {
+        songUpdateEvent = handler;
     }
 
     public void disableLogger(boolean disable) {

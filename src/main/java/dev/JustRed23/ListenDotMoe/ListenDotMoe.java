@@ -1,6 +1,5 @@
 package dev.JustRed23.ListenDotMoe;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import dev.JustRed23.ListenDotMoe.Endpoint.LDMEndpoint;
@@ -16,13 +15,9 @@ import static dev.JustRed23.ListenDotMoe.Utils.Logger.*;
 public class ListenDotMoe implements Runnable {
 
     private static LDMEndpoint endpoint;
-    private static String message = "";
-    private static final Gson gson = new Gson();
 
     public static final String LDM_ALBUM_ENDPOINT = "https://cdn.listen.moe/covers/";
     public static final String LDM_ARTISTS_ENDPOINT = "https://cdn.listen.moe/artists/";
-
-    private int heartbeats = 0;
 
     public void start(String[] args) {
         AnsiConsole.systemInstall();
@@ -70,8 +65,6 @@ public class ListenDotMoe implements Runnable {
                 break;
             case 10:
                 debug("Received heartbeat");
-                heartbeats++;
-                if (heartbeats >= 3) stop();
                 break;
             default:
                 debug("Received invalid OP code! Ignoring");

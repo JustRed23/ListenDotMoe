@@ -1,7 +1,9 @@
 package dev.JustRed23.ListenDotMoe.Music;
 
-import com.google.gson.*;
-import dev.JustRed23.ListenDotMoe.ListenDotMoe;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonNull;
+import com.google.gson.JsonObject;
 
 public class Song {
 

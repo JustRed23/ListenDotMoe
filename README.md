@@ -5,30 +5,23 @@ ListenDotMoe is a Java API used to get song information from [listen.moe](https:
 ## Usage
 
 ```java
-import dev.JustRed23.ListenDotMoe.Music.Song;
-import dev.JustRed23.ListenDotMoe.Music.SongUpdateEvent;
-
-public class SongClass implements SongUpdateEvent {
-
-    @Override
-    public void onSongUpdate(Song song) {
-        //Handle song info here
-    }
-}
-
-/******MAIN CLASS******/
+package com.example;
 
 import dev.JustRed23.ListenDotMoe.ListenDotMoe;
+import dev.JustRed23.ListenDotMoe.Utils.Logger;
 
-public class MainClass {
+import java.util.concurrent.TimeUnit;
 
-    public static void main(String[] args) {
+public class Example {
+
+    public static void main(String[] args) throws InterruptedException {
         ListenDotMoe ldm = new ListenDotMoe();
-        SongClass songClass = new SongClass();
-        ldm.addSongEventHandler(songClass);
+        ldm.enableDebug(false);
+        ldm.disableLogger(false);
+        ldm.addSongEventHandler(song -> Logger.info("Song title: " + song.getTitle()));
         ldm.start();
-        
-        //...
+
+        TimeUnit.SECONDS.sleep(3);
         ldm.stop();
     }
 }

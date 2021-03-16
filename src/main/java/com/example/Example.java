@@ -1,10 +1,3 @@
-# ListenDotMoe
-
-ListenDotMoe is a Java API used to get song information from [listen.moe](https://listen.moe/)
-
-## Usage
-
-```java
 package com.example;
 
 import dev.JustRed23.ListenDotMoe.ListenDotMoe;
@@ -25,10 +18,3 @@ public class Example {
         ldm.stop();
     }
 }
-```
-
-## Contributing
-Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
-
-## License
-[MIT](https://choosealicense.com/licenses/mit/)

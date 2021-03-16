@@ -5,10 +5,9 @@ import com.google.gson.JsonParser;
 import dev.JustRed23.ListenDotMoe.Endpoint.LDMEndpoint;
 import dev.JustRed23.ListenDotMoe.Music.Song;
 import dev.JustRed23.ListenDotMoe.Music.SongUpdateEvent;
+import dev.JustRed23.ListenDotMoe.Utils.Logger;
 import jakarta.websocket.CloseReason;
 import org.fusesource.jansi.AnsiConsole;
-
-import java.util.Arrays;
 
 import static dev.JustRed23.ListenDotMoe.Utils.Logger.*;
 
@@ -25,9 +24,7 @@ public class ListenDotMoe implements Runnable {
     public void start() {
         AnsiConsole.systemInstall();
 
-        ListenDotMoe listenDotMoe = new ListenDotMoe();
-
-        Thread thread = new Thread(listenDotMoe, "ListenDotMoe");
+        Thread thread = new Thread(this, "ListenDotMoe");
         thread.start();
     }
 
@@ -64,6 +61,7 @@ public class ListenDotMoe implements Runnable {
                 Song song = new Song(json);
                 if (songUpdateEvent != null)
                     songUpdateEvent.onSongUpdate(song);
+                Logger.debug(songUpdateEvent);
                 break;
             case 10:
                 debug("Received heartbeat");

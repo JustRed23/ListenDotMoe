@@ -1,64 +1,70 @@
 package dev.JustRed23.ListenDotMoe.Music;
 
 import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
+import dev.JustRed23.ListenDotMoe.Music.details.Album;
+import dev.JustRed23.ListenDotMoe.Music.details.Artist;
+import dev.JustRed23.ListenDotMoe.Music.details.Duration;
+
+import static dev.JustRed23.ListenDotMoe.Utils.JsonUtils.*;
 
 public class Song {
 
-    private Info songInfo = new Info();
+    private int songID;
+    private String title;
+
+    private Artist artist;
+    private Album album;
+    private Duration duration;
 
     public Song(JsonObject json) {
         JsonObject d = json.get("d").getAsJsonObject();
         JsonObject song = d.get("song").getAsJsonObject();
 
-        songInfo.songID = parseInt(song, "id");
-        songInfo.title = parseString(song, "title");
+        songID = parseInt(song, "id");
+        title = parseString(song, "title");
 
         JsonArray artists = song.getAsJsonArray("artists");
         JsonObject artist = parseJsonObject(artists, 0);
 
-        songInfo.artistID = parseInt(artist, "id");
-        songInfo.artistNameEnglish = parseString(artist, "name");
-        songInfo.artistNameRomaji = parseString(artist, "nameRomaji");
-        songInfo.artistImage += parseString(artist, "image");
+        int artistID = parseInt(artist, "id");
+        String artistNameEnglish = parseString(artist, "name");
+        String artistNameRomaji = parseString(artist, "nameRomaji");
+        String artistImage = parseString(artist, "image");
+
+        this.artist = new Artist(artistID, artistNameEnglish, artistNameRomaji, artistImage);
 
         JsonArray albums = song.getAsJsonArray("albums");
         JsonObject album = parseJsonObject(albums, 0);
 
-        songInfo.albumID = parseInt(album, "id");
-        songInfo.albumNameEnglish = parseString(album, "name");
-        songInfo.albumNameRomaji = parseString(album, "nameRomaji");
-        songInfo.albumImage += parseString(album, "image");
+        int albumID = parseInt(album, "id");
+        String albumNameEnglish = parseString(album, "name");
+        String albumNameRomaji = parseString(album, "nameRomaji");
+        String albumImage = parseString(album, "image");
+
+        this.album = new Album(albumID, albumNameEnglish, albumNameRomaji, albumImage);
 
         int duration = parseInt(song, "duration");
-        songInfo.durationMinutes = duration / 60;
-        songInfo.durationSeconds = duration % 60;
-
         String dateTime = parseString(d, "startTime");
         String date = dateTime.substring(0, dateTime.indexOf("T"));
         String time = dateTime.substring(dateTime.indexOf("T") + 1, dateTime.lastIndexOf("."));
 
-        songInfo.songStartTime = date + "@" + time;
+        this.duration = new Duration(duration, date, time);
     }
 
-    public Info getSongInfo() {
-        return songInfo;
+    public int getSongID() {
+        return songID;
     }
 
-    private String parseString(JsonObject object, String value) {
-        JsonElement json = object.get(value);
-        return json instanceof JsonNull || json == null ? "" : json.getAsString();
+    public String getTitle() {
+        return title;
     }
 
-    private int parseInt(JsonObject object, String value) {
-        JsonElement json = object.get(value);
-        return json instanceof JsonNull || json == null ? -1 : json.getAsInt();
+    public Artist getArtist() {
+        return artist;
     }
 
-    private JsonObject parseJsonObject(JsonArray object, int index) {
-        JsonElement json = object.get(index);
-        return json instanceof JsonNull || json == null ? new JsonObject() : json.getAsJsonObject();
+    public Album getAlbum() {
+        return album;
     }
 }

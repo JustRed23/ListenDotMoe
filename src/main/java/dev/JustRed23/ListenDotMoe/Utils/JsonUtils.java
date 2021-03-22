@@ -18,7 +18,14 @@ public class JsonUtils {
     }
 
     public static JsonObject parseJsonObject(JsonArray object, int index) {
-        JsonElement json = object.get(index);
+        JsonElement json;
+
+        try {
+            json = object.get(index);
+        } catch (IndexOutOfBoundsException e) {
+            return new JsonObject();
+        }
+
         return json instanceof JsonNull || json == null ? new JsonObject() : json.getAsJsonObject();
     }
 }

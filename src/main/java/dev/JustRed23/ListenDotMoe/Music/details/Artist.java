@@ -7,13 +7,15 @@ public class Artist {
     private int artistID;
     private String artistNameEnglish;
     private String artistNameRomaji;
-    private String artistImage = ListenDotMoe.LDM_ARTISTS_ENDPOINT;
+    private String artistImage = "";
 
     public Artist(int artistID, String artistNameEnglish, String artistNameRomaji, String artistImage) {
+        if (artistID == -1) return;
         this.artistID = artistID;
         this.artistNameEnglish = artistNameEnglish;
         this.artistNameRomaji = artistNameRomaji;
-        this.artistImage += artistImage;
+        if (!artistImage.isEmpty())
+            this.artistImage = ListenDotMoe.LDM_ARTISTS_ENDPOINT + artistImage;
     }
 
     public int getArtistID() {
@@ -30,5 +32,14 @@ public class Artist {
 
     public String getArtistImage() {
         return artistImage;
+    }
+
+    public String toString() {
+        return "Artist{" +
+                "artistID=" + artistID +
+                ", artistNameEnglish='" + artistNameEnglish + '\'' +
+                ", artistNameRomaji='" + artistNameRomaji + '\'' +
+                ", artistImage='" + artistImage + '\'' +
+                '}';
     }
 }

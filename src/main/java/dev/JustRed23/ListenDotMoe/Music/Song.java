@@ -5,6 +5,13 @@ import com.google.gson.JsonObject;
 import dev.JustRed23.ListenDotMoe.Music.details.Album;
 import dev.JustRed23.ListenDotMoe.Music.details.Artist;
 import dev.JustRed23.ListenDotMoe.Music.details.Duration;
+import dev.JustRed23.ListenDotMoe.Utils.Logger;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.TimeZone;
 
 import static dev.JustRed23.ListenDotMoe.Utils.JsonUtils.*;
 
@@ -45,11 +52,19 @@ public class Song {
         this.album = new Album(albumID, albumNameEnglish, albumNameRomaji, albumImage);
 
         int duration = parseInt(song, "duration");
-        String dateTime = parseString(d, "startTime");
-        String date = dateTime.substring(0, dateTime.indexOf("T"));
-        String time = dateTime.substring(dateTime.indexOf("T") + 1, dateTime.lastIndexOf("."));
 
-        this.duration = new Duration(duration, date, time);
+        try {
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+            Date dd = simpleDateFormat.parse(parseString(d, "startTime"));
+
+            String timeZone = Calendar.getInstance().getTimeZone().getID();
+            Date local = new Date(dd.getTime() + TimeZone.getTimeZone(timeZone).getOffset(dd.getTime()));
+
+            String date = new SimpleDateFormat("yyyy-MM-dd").format(local);
+            String time = new SimpleDateFormat("HH:mm:ss").format(local);
+
+            this.duration = new Duration(duration, date, time);
+        } catch (ParseException ignored) {}
     }
 
     public int getSongID() {
@@ -66,5 +81,15 @@ public class Song {
 
     public Album getAlbum() {
         return album;
+    }
+
+    public String toString() {
+        return "Song{" +
+                "songID=" + songID +
+                ", title='" + title + '\'' +
+                ", artist=" + artist +
+                ", album=" + album +
+                ", duration=" + duration +
+                '}';
     }
 }

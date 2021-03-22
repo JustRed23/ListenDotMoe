@@ -7,13 +7,15 @@ public class Album {
     private int albumID;
     private String albumNameEnglish;
     private String albumNameRomaji;
-    private String albumImage = ListenDotMoe.LDM_ALBUM_ENDPOINT;
+    private String albumImage = "";
 
     public Album(int albumID, String albumNameEnglish, String albumNameRomaji, String albumImage) {
+        if (albumID == -1) return;
         this.albumID = albumID;
         this.albumNameEnglish = albumNameEnglish;
         this.albumNameRomaji = albumNameRomaji;
-        this.albumImage += albumImage;
+        if (!albumImage.isEmpty())
+            this.albumImage = ListenDotMoe.LDM_ALBUM_ENDPOINT + albumImage;
     }
 
     public int getAlbumID() {
@@ -30,5 +32,14 @@ public class Album {
 
     public String getAlbumImage() {
         return albumImage;
+    }
+
+    public String toString() {
+        return "Album{" +
+                "albumID=" + albumID +
+                ", albumNameEnglish='" + albumNameEnglish + '\'' +
+                ", albumNameRomaji='" + albumNameRomaji + '\'' +
+                ", albumImage='" + albumImage + '\'' +
+                '}';
     }
 }

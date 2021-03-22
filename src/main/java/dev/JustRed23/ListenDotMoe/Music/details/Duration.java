@@ -36,4 +36,14 @@ public class Duration {
     public String getStartTime() {
         return startTime;
     }
+
+    public String toString() {
+        return "Duration{" +
+                "durationHours=" + durationHours +
+                ", durationMinutes=" + durationMinutes +
+                ", durationSeconds=" + durationSeconds +
+                ", startDate='" + startDate + '\'' +
+                ", startTime='" + startTime + '\'' +
+                '}';
+    }
 }

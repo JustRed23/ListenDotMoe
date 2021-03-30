@@ -12,7 +12,7 @@ import static dev.JustRed23.ListenDotMoe.Utils.Logger.*;
 
 public class ListenDotMoe {
 
-    public static final double VERSION = 1.1;
+    public static final double VERSION = 1.2;
 
     private static LDMEndpoint endpoint;
     private static SongUpdateEvent songUpdateEvent;

@@ -153,4 +153,8 @@ public class LDMEndpoint {
     public Session getSession() {
         return session;
     }
+
+    public CloseReason getCloseReason() {
+        return close;
+    }
 }

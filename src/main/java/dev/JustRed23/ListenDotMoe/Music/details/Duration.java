@@ -2,17 +2,17 @@ package dev.JustRed23.ListenDotMoe.Music.details;
 
 public class Duration {
 
-    private int durationHours;
-    private int durationMinutes;
-    private int durationSeconds;
+    private final int durationHours;
+    private final int durationMinutes;
+    private final int durationSeconds;
 
-    private String startDate;
-    private String startTime;
+    private final String startDate;
+    private final String startTime;
 
     public Duration(int duration, String startDate, String startTime) {
-        durationSeconds = duration % 60;
-        durationMinutes = (duration / 60) % 60;
-        durationHours = (duration / 60) / 60;
+        this.durationSeconds = duration % 60;
+        this.durationMinutes = (duration / 60) % 60;
+        this.durationHours = (duration / 60) / 60;
         this.startDate = startDate;
         this.startTime = startTime;
     }

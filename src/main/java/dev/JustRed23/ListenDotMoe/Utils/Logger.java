@@ -1,58 +1,39 @@
 package dev.JustRed23.ListenDotMoe.Utils;
 
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.LogManager;
+import org.slf4j.LoggerFactory;
+import org.slf4j.event.Level;
 
-import static org.apache.logging.log4j.Level.*;
+import static org.slf4j.event.Level.*;
 
 public class Logger {
 
     public static boolean debug;
     public static boolean disableLogging;
 
-    private static final org.apache.logging.log4j.Logger LOGGER = LogManager.getLogger(Logger.class.getName());
+    private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(Logger.class);
 
-    public static void log(Level logLevel, Object message) {
-        if (disableLogging) return;
-        LOGGER.log(logLevel, message);
+    public static void info(String message) {
+        if (!disableLogging)
+            LOGGER.info(message);
     }
 
-    private static void log(Level logLevel, Object message, Throwable t) {
-        log(logLevel, message);
-        logStackTrace(t);
+    public static void warn(String message) {
+        if (!disableLogging)
+            LOGGER.warn(message);
     }
 
-    public static void logStackTrace(Throwable t) {
-        if (t == null)
-            return;
-        t.printStackTrace();
+    public static void error(String message) {
+        if (!disableLogging)
+            LOGGER.error(message);
     }
 
-    public static void info(Object message) {
-        log(INFO, message);
+    public static void error(String message, Throwable t) {
+        if (!disableLogging)
+            LOGGER.error(message, t);
     }
 
-    public static void warn(Object message) {
-        log(WARN, message);
-    }
-
-    public static void error(Object message) {
-        error(message, null);
-    }
-
-    public static void error(Object message, Throwable t) {
-        log(ERROR, message, t);
-    }
-
-    public static void fatal(Object message) {
-        fatal(message, null);
-    }
-
-    public static void fatal(Object message, Throwable t) {
-        log(FATAL, message, t);
-    }
-
-    public static void debug(Object message) {
-        if (debug) log(DEBUG, message);
+    public static void debug(String message) {
+        if (debug && !disableLogging)
+            LOGGER.debug(message);
     }
 }

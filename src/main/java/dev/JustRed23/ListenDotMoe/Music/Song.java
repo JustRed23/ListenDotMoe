@@ -85,6 +85,10 @@ public class Song {
         return album;
     }
 
+    public Duration getDuration() {
+        return duration;
+    }
+
     public String toString() {
         return "Song{" +
                 "songID=" + songID +

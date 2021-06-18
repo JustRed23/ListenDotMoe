@@ -14,8 +14,7 @@ dependencies {
     compile 'org.jetbrains:annotations:20.1.0'
     compile 'com.google.code.gson:gson:2.8.6'
     compile 'org.glassfish.tyrus:tyrus-server:2.0.0'
-    compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.14.0'
-    compile group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.14.0'
+    compile 'ch.qos.logback:logback-classic:1.2.3'
     compile 'org.fusesource.jansi:jansi:2.3.1'
 }
 

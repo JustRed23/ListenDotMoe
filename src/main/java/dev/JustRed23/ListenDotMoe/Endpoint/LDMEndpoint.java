@@ -12,8 +12,6 @@ import java.util.TimerTask;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-import static dev.JustRed23.ListenDotMoe.Utils.Logger.*;
-
 @ClientEndpoint
 public class LDMEndpoint {
 
@@ -43,7 +41,6 @@ public class LDMEndpoint {
         this.session = session;
         reconnectAttempts = 0;
         onError = false;
-        info("Session " + session.getId() + " started");
     }
 
     @OnMessage
@@ -68,14 +65,11 @@ public class LDMEndpoint {
         }
 
         if (onError) {
-            error("An error occurred: " + closeReason.getReasonPhrase());
             reconnectAttempts++;
             if (reconnectAttempts > MAX_RECONNECT_ATTEMPTS) {
-                error("Maximum reconnect attempts reached");
                 reconnectAttempts = 0;
                 closeLatch.countDown();
             } else {
-                info("Attempting to reconnect... Attempt " + reconnectAttempts);
                 try {
                     TimeUnit.SECONDS.sleep(3);
                 } catch (InterruptedException e) {
@@ -131,7 +125,6 @@ public class LDMEndpoint {
     }
 
     public void sendMessage(String message) {
-        debug("Sent message: " + message + " to websocket");
         Session session = getSession();
         try {
             if (session != null && session.isOpen())

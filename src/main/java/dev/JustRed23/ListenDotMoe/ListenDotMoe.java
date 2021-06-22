@@ -2,17 +2,17 @@ package dev.JustRed23.ListenDotMoe;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import dev.JustRed23.ListenDotMoe.Endpoint.LDMEndpoint;
+import dev.JustRed23.ListenDotMoe.Endpoint.Client;
 import dev.JustRed23.ListenDotMoe.Music.Song;
 import dev.JustRed23.ListenDotMoe.Music.SongUpdateEvent;
-import jakarta.websocket.CloseReason;
-import org.fusesource.jansi.AnsiConsole;
+
+import java.net.URI;
 
 public class ListenDotMoe {
 
-    public static final double VERSION = 1.4;
+    public static final double VERSION = 2.0;
 
-    private static LDMEndpoint endpoint;
+    private static Client client;
     private static SongUpdateEvent songUpdateEvent;
 
     public static final String LDM_ALBUM_ENDPOINT = "https://cdn.listen.moe/covers/";
@@ -20,21 +20,23 @@ public class ListenDotMoe {
 
     private boolean running = false;
 
+    private static boolean loggingEnabled = true;
+
     public void start() {
         if (running) return;
         running = true;
-        AnsiConsole.systemInstall();
 
         Thread thread = new Thread(() -> {
-            endpoint = new LDMEndpoint("wss://listen.moe/gateway_v2");
-            endpoint.addMessageHandler(ListenDotMoe::processMessage);
+            client = new Client(URI.create("wss://listen.moe/gateway_v2"));
+            client.addMessageHandler(ListenDotMoe::processMessage);
+
 
             try {
-                endpoint.closeLatch.await();
+                client.connectBlocking();
+                client.closeLatch.await();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-
         }, "ListenDotMoe");
         thread.start();
     }
@@ -42,8 +44,12 @@ public class ListenDotMoe {
     public void stop() {
         if (!running) return;
         running = false;
-        endpoint.close(new CloseReason(CloseReason.CloseCodes.NORMAL_CLOSURE, "Closing client"));
-        AnsiConsole.systemUninstall();
+
+        try {
+            client.closeBlocking();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     private static synchronized void processMessage(String message) {
@@ -51,7 +57,7 @@ public class ListenDotMoe {
 
         switch (json.get("op").getAsInt()) {
             case 0:
-                endpoint.setHeartbeatInterval(json.get("d").getAsJsonObject().get("heartbeat").getAsLong());
+                client.setHeartbeat(json.get("d").getAsJsonObject().get("heartbeat").getAsLong());
                 break;
             case 1:
                 Song song = new Song(json);
@@ -66,5 +72,13 @@ public class ListenDotMoe {
 
     public void addSongEventHandler(SongUpdateEvent handler) {
         songUpdateEvent = handler;
+    }
+
+    public static boolean isLoggingEnabled() {
+        return loggingEnabled;
+    }
+
+    public void setLoggingEnabled(boolean loggingEnabled) {
+        ListenDotMoe.loggingEnabled = loggingEnabled;
     }
 }

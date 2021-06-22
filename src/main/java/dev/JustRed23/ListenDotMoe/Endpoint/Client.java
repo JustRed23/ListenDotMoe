@@ -2,23 +2,20 @@ package dev.JustRed23.ListenDotMoe.Endpoint;
 
 import com.google.gson.JsonObject;
 import dev.JustRed23.ListenDotMoe.ListenDotMoe;
-import org.java_websocket.WebSocket;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.drafts.Draft;
 import org.java_websocket.handshake.ServerHandshake;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.net.URI;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 
 public class Client extends WebSocketClient {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(Client.class);
+    private static final Logger LOGGER = ListenDotMoe.getLogger();
 
     private boolean onError;
 

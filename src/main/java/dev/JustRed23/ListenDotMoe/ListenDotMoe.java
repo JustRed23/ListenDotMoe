@@ -5,12 +5,16 @@ import com.google.gson.JsonParser;
 import dev.JustRed23.ListenDotMoe.Endpoint.Client;
 import dev.JustRed23.ListenDotMoe.Music.Song;
 import dev.JustRed23.ListenDotMoe.Music.SongUpdateEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.net.URI;
 
 public class ListenDotMoe {
 
-    public static final double VERSION = 2.0;
+    public static final double VERSION = 2.1;
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ListenDotMoe.class);
 
     private static Client client;
     private static SongUpdateEvent songUpdateEvent;
@@ -26,10 +30,11 @@ public class ListenDotMoe {
         if (running) return;
         running = true;
 
+        LOGGER.info("Starting ListenDoeMoe V" + VERSION);
+
         Thread thread = new Thread(() -> {
             client = new Client(URI.create("wss://listen.moe/gateway_v2"));
             client.addMessageHandler(ListenDotMoe::processMessage);
-
 
             try {
                 client.connectBlocking();
@@ -39,6 +44,8 @@ public class ListenDotMoe {
             }
         }, "ListenDotMoe");
         thread.start();
+
+        LOGGER.info("Stopping...");
     }
 
     public void stop() {
@@ -80,5 +87,9 @@ public class ListenDotMoe {
 
     public void setLoggingEnabled(boolean loggingEnabled) {
         ListenDotMoe.loggingEnabled = loggingEnabled;
+    }
+
+    public static Logger getLogger() {
+        return LOGGER;
     }
 }

@@ -42,10 +42,10 @@ public class ListenDotMoe {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+
+            LOGGER.info("Stopping...");
         }, "ListenDotMoe");
         thread.start();
-
-        LOGGER.info("Stopping...");
     }
 
     public void stop() {

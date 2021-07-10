@@ -12,7 +12,7 @@ import java.net.URI;
 
 public class ListenDotMoe {
 
-    public static final double VERSION = 2.1;
+    public static final double VERSION = 2.2;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ListenDotMoe.class);
 
@@ -44,6 +44,8 @@ public class ListenDotMoe {
             }
 
             LOGGER.info("Stopping...");
+
+            running = false;
         }, "ListenDotMoe");
         thread.start();
     }

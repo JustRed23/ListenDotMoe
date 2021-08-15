@@ -16,6 +16,8 @@ public class Example {
     public static void main(String[] args) throws InterruptedException {
         //Create a new instance
         ListenDotMoe ldm = new ListenDotMoe();
+        //Disable logging (optional)
+        ldm.disableLogging();
         //Add the song event handler
         ldm.addSongEventHandler(song -> System.out.println("Song title: " + song.getTitle()));
         //Start ListenDotMoe
